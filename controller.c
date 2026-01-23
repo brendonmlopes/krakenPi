@@ -5,8 +5,8 @@
 
 #define maxPins 26
 #define C_RED "\033[1;31m"
-#define C_BLUE "\033[1;32m"
-#define C_GREEN "\033[1;33m"
+#define C_GREEN "\033[1;32m"
+#define C_YELLOW "\033[1;33m"
 #define C_RESET "\033[0m"
 
 typedef struct Pin{
@@ -19,7 +19,7 @@ typedef struct Pin{
 int main(int argc, char* argv[]){
 
 	if(argc==1){
-		fprintf(stdout,C_RED "\n\nSYNTAX ERROR : Not enough arguments\nUsage:\tkrakenpi [INPUT_PIN1]=[INPUT_VALUE1],[OUTPUT_PIN1]=[OUTPUT1] [INPUT_PIN2]=[INPUT_VALUE2],[OUTPUT_PIN2]=[OUTPUT2] ... \n" C_RESET);
+		fprintf(stderr,C_RED "\n\nSYNTAX ERROR : Not enough arguments\nUsage:\tkrakenpi [INPUT_PIN1]=[INPUT_VALUE1],[OUTPUT_PIN1]=[OUTPUT1] [INPUT_PIN2]=[INPUT_VALUE2],[OUTPUT_PIN2]=[OUTPUT2] ... \n" C_RESET);
 		return 1;
 	}
 
@@ -37,8 +37,7 @@ int main(int argc, char* argv[]){
 		pins[i].output = -1;
 	}
 
-	
-	printf("\n================================\nCommands received:\n================================\n\n");
+	printf(C_YELLOW "\n================================\nCommands received:\n================================\n\n" C_RESET);
 	for(int i = 1; i < argc ; i++){
 		char* command = argv[i];
 		printf("%d: %s\n",i,command);
@@ -72,7 +71,7 @@ int main(int argc, char* argv[]){
 
 	}
 
-	printf("\n================================\nExecuting...\n================================\n\n");
+	printf(C_YELLOW "\n================================\nExecuting...\n================================\n\n" C_RESET);
 
 	for(int i = 0 ; i < maxPins ; i++){
 		Pin pin = pins[i];
@@ -99,7 +98,7 @@ int main(int argc, char* argv[]){
 			}
 		}
 	}
-	printf("\n================================\nDONE\n================================\n\n");
+	printf(C_GREEN "\n================================\nDONE\n================================\n\n" C_RESET);
 	
 	return 0;
 }
