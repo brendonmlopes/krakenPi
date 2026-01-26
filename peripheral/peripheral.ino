@@ -1,34 +1,32 @@
-int inputPin 9;
-int outputPin 10;
-int mode = 1;
+#include <Stepper.h>
 
-// Modes
-// mode = 1
-//	if input == 1 => output == 1
-//	if input == 0 => output == 0
-// mode = 0
-//	if input == 1 => output == 0
-//	if input == 0 => output == 1
+int inputPin = 12;
 
-void setup(){
-	pinMode(inputPin,INPUT);
-	pinMode(outputPin,OUTPUT);
+const int stepsPerRevolution = 200;
+
+Stepper myStepper(stepsPerRevolution, 8, 9, 10, 11);
+
+void setup() {
+  myStepper.setSpeed(60);
+  Serial.begin(9600);
 }
 
-void loop(){
-	float input = digitalRead(inputPin);
-	if(input == HIGH){
-		if(mode){
-			digitalWrite(outputPin,HIGH);
-		}else{
-			digitalWrite(outputPin,LOW);
-		}
-	}else{
-		if(mode){
-			digitalWrite(outputPin,LOW);
-		}else{
-			digitalWrite(outputPin,HIGH);
-		}
-	}
-
+void loop() {
+  char c;
+  if (Serial.available() > 0) {
+    c = Serial.read();
+    Serial.print("Received: ");
+    Serial.println(c);
+  }
+  if(c == 'f'){
+    Serial.println("clockwise");
+    myStepper.step(1);
+    delay(10);
+  }
+  if(c == 'b'){
+    Serial.println("counterclockwise");
+    myStepper.step(-1);
+    delay(10);
+  }
 }
+
