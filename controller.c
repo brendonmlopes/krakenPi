@@ -104,5 +104,6 @@ int main(int argc, char* argv[]){
 		printf("Running...\n");
 		printf("Press CTRL+C to stop");
 	}
+
 	return 0;
 }
