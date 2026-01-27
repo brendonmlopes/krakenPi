@@ -1,32 +1,33 @@
 #include <Stepper.h>
 
-int inputPin = 12;
-
-const int stepsPerRevolution = 200;
+int stepsPerRevolution = 200;
 
 Stepper myStepper(stepsPerRevolution, 8, 9, 10, 11);
 
 void setup() {
   myStepper.setSpeed(60);
   Serial.begin(9600);
+  delay(100);
 }
 
 void loop() {
-  char c;
-  if (Serial.available() > 0) {
-    c = Serial.read();
-    Serial.print("Received: ");
-    Serial.println(c);
-  }
-  if(c == 'f'){
-    Serial.println("clockwise");
-    myStepper.step(1);
-    delay(10);
-  }
-  if(c == 'b'){
-    Serial.println("counterclockwise");
-    myStepper.step(-1);
-    delay(10);
+  if(Serial.available()){
+    String c = Serial.readStringUntil('\n');
+    c.trim();
+
+    if (c.length() < 2){
+      return;
+    }
+    char dir = c[c.length() - 1];
+    int steps = c.substring(0, c.length() - 1).toInt();
+
+    if(dir == 'f'){
+      myStepper.step(steps);
+    }
+
+    if(dir == 'b'){
+      myStepper.step(-steps);
+    }
+
   }
 }
-
