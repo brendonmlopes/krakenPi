@@ -100,5 +100,9 @@ int main(int argc, char* argv[]){
 	}
 	printf(C_GREEN "\n================================\nDONE\n================================\n\n" C_RESET);
 	
+	while(true){
+		printf("Running...\n");
+		printf("Press CTRL+C to stop");
+	}
 	return 0;
 }
