@@ -38,6 +38,7 @@ int main(int argc, char* argv[]){
 	}
 
 	printf(C_YELLOW "\n================================\nCommands received:\n================================\n\n" C_RESET);
+
 	for(int i = 1; i < argc ; i++){
 		char* command = argv[i];
 		printf("%d: %s\n",i,command);
@@ -98,6 +99,7 @@ int main(int argc, char* argv[]){
 			}
 		}
 	}
+
 	printf(C_GREEN "\n================================\nDONE\n================================\n\n" C_RESET);
 	
 	while(true){
