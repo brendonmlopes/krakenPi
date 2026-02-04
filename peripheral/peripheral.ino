@@ -18,19 +18,19 @@ const int MY_ID = 3;
 
 int stepsPerRevolution = 200;
 Stepper stepper(stepsPerRevolution, 8, 9, 10, 11);
-int pos = 0;
+long pos = 0;
 
 void setup() {
   stepper.setSpeed(80);
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.println("START");
 }
 
-static long readNumber(const String& s, int& i) {
+static long readNumber(const char* s, int& i, int maxLen) {
   long sign = 1;
-  if (i < s.length() && s[i] == '-') { sign = -1; i++; }
+  if (i < maxLen && s[i] == '-') { sign = -1; i++; }
   long v = 0;
-  while (i < s.length() && s[i] >= '0' && s[i] <= '9') {
+  while (i < maxLen && s[i] >= '0' && s[i] <= '9') {
     v = v * 10 + (s[i] - '0');
     i++;
   }
@@ -40,32 +40,42 @@ static long readNumber(const String& s, int& i) {
 void loop() {
   if (!Serial.available()) return;
 
-  String msg = Serial.readStringUntil('\n');
-  msg.trim();
-  if (msg.length() < 3) return;
+  char msg[64];
+  int len = Serial.readBytesUntil('\n', msg, sizeof(msg) - 1);
+  msg[len] = '\0';
+  
+  if (len < 3 || len >= sizeof(msg)) return;
 
   // Parse: ID,MULT,CMD,VALUE
   int i = 0;
 
-  long id = readNumber(msg, i);
-  if (i >= msg.length() || msg[i] != ',') return;
+  long id = readNumber(msg, i, len);
+  if (i >= len || msg[i] != ',') return;
   i++;
 
-  long mult = readNumber(msg, i);
-  if (i >= msg.length() || msg[i] != ',') return;
+  long mult = readNumber(msg, i, len);
+  if (i >= len || msg[i] != ',') return;
   i++;
 
-  if (i >= msg.length()) return;
+  if (i >= len) return;
   char cmd = msg[i++];
 
-  if (i >= msg.length() || msg[i] != ',') return;
+  if (i >= len || msg[i] != ',') return;
   i++;
 
-  long value = readNumber(msg, i);
+  long value = readNumber(msg, i, len);
 
-  if (id != MY_ID) return;
+  if (id != MY_ID) {
+    Serial.println("ERR:BAD_ID");
+    return;
+  }
   if (mult <= 0) mult = 1;
   if (mult > 10000) mult = 10000;
+  
+  if (value > 32767 || value < -32767) {
+    Serial.println("ERR:VALUE_OOR");
+    return;
+  }
 
   for (long k = 0; k < mult; k++) {
     switch (cmd) {
@@ -80,6 +90,8 @@ void loop() {
         pos -= value ;
         break;
       default: 
+        Serial.print("ERR:BAD_CMD:");
+        Serial.println(cmd);
         break;
     }
   }

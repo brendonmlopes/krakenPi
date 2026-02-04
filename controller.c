@@ -13,22 +13,27 @@ typedef struct command{
 
 int main(int argc, char* argv[]){
 	FILE* commandsFile = fopen("commands.csv","r");
-	int fd = serialOpen("/dev/serial0",9600);
 
-	int c;
-
-	if(!file){
-		fprintf(stderr,"CAN'T CREATE FILE %s","commands.csv");
+	if(!commandsFile){
+		fprintf(stderr,"CAN'T OPEN FILE %s","commands.csv");
 		return 1;
 	}
 
-	char line[30];
+	int c;
+	int fd = serialOpen("/dev/serial0",9600);
 
-	while((c=fgetc(file))!=EOF){
-		serialPuts(fd,c);
+	if(fd < 0){
+		fprintf(stderr,"CAN'T OPEN SERIAL PORT\n");
+		fclose(commandsFile);
+		return 1;
 	}
 
-	fclose(file);
+	char line[64];
+	while(fgets(line, sizeof(line), commandsFile) != NULL){
+		serialPuts(fd, line);
+	}
+
+	fclose(commandsFile);
 	serialClose(fd);
 	return 0;
 }
